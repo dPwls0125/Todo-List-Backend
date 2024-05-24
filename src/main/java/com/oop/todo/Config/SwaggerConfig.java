@@ -15,6 +15,6 @@ public class SwaggerConfig {
                 .info(new Info()
                         .title("TodoList OpenApi")
                         .description("객체지향 프로그래밍 프로젝트를 위한 TodoList API 문서입니다.")
-                        .version("V2"));
+                        .version("V1"));
     }
 }
