@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -125,6 +126,22 @@ public class TodoController {
             ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().data(dtos).build();
 
             //HTTP Status 200상태로 response를 전송한다.
+            return ResponseEntity.ok().body(response);
+        }catch (Exception e) {
+            String error = e.getMessage();
+            ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().error(error).build();
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> delete(@RequestBody TodoDTO dto){
+        try {
+            List<String> message = new ArrayList<>(); //import java.util.ArrayList 추가
+            String msg = service.delete(dto.getId());
+            message.add(msg);
+            //Response DTO를 생성한다.
+            ResponseDTO<String> response = ResponseDTO.<String>builder().data(message).build();
             return ResponseEntity.ok().body(response);
         }catch (Exception e) {
             String error = e.getMessage();
