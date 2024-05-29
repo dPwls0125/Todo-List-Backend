@@ -43,7 +43,7 @@ public class TodoService {
     public Optional<TodoEntity>updateTodo(final TodoEntity entity) {
         //validations
         validate(entity);
-
+        System.out.println(entity.toString());
         //테이블에서 id에 해당하는 데이터셋을 가져온다.
         final Optional<TodoEntity> original = repository.findById(entity.getId());
 
