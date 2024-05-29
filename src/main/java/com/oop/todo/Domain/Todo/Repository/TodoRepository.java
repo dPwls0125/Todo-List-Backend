@@ -1,4 +1,4 @@
-package com.oop.todo.Domain.Todo.persistence;
+package com.oop.todo.Domain.Todo.Repository;
 
 import com.oop.todo.Domain.Todo.Entity.TodoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,7 +9,6 @@ import java.util.List;
 
 @Repository
 public interface TodoRepository extends JpaRepository<TodoEntity, String> {
-
     @Query("select t from TodoEntity t where t.userId = ?1")
     List<TodoEntity> findByUserId(String userId);
 }

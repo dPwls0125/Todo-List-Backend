@@ -2,7 +2,7 @@ package com.oop.todo.Domain.Todo.service;
 
 
 import com.oop.todo.Domain.Todo.Entity.TodoEntity;
-import com.oop.todo.Domain.Todo.persistence.TodoRepository;
+import com.oop.todo.Domain.Todo.Repository.TodoRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

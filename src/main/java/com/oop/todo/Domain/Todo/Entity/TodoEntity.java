@@ -1,10 +1,7 @@
 package com.oop.todo.Domain.Todo.Entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 
 import lombok.AllArgsConstructor;
@@ -25,7 +22,13 @@ public class TodoEntity {
     @GeneratedValue(generator="system-uuid") //자동으로 id 생성
     @GenericGenerator(name="system-uuid",strategy="uuid")
     private String id;
+
+    @Column(name = "user_id")
     private String userId;
+
+    @Column(name = "title")
     private String title;
+
+    @Column(name = "done")
     private boolean done;
 }
