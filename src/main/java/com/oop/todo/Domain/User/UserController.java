@@ -14,20 +14,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @Autowired
     private TokenProvider tokenProvider;
     @PostMapping("/signUp")
     public ResponseEntity<?>registerUser(@RequestBody UserDTO userDTO){
         try{
-            UserEntity user = UserEntity.builder()
+            UserEntity userEntity = UserEntity.builder()
                     .username(userDTO.getUsername())
                     .password(userDTO.getPassword())
                     .email(userDTO.getEmail())
                     .build();
 
-            UserEntity registeredUser = userService.create(user);
+            UserEntity registeredUserEntity = userService.create(userEntity);
             UserDTO responseUserDTO = UserDTO.builder()
-                    .username(registeredUser.getUsername())
-                    .email(registeredUser.getEmail())
+                    .username(registeredUserEntity.getUsername())
+                    .email(registeredUserEntity.getEmail())
                     .build();
 
             return ResponseEntity.ok().body(responseUserDTO);
@@ -40,13 +42,17 @@ public class UserController {
         }
     }
 
+
+    @PostMapping("/signIn")
     public ResponseEntity<?> authenticate(@RequestBody UserDTO userDTO){
-        UserEntity user = userService.getByCredentials(userDTO.getEmail(), userDTO.getPassword());
-        if(user != null){
-            final String token =  tokenProvider.create(user);
+
+        UserEntity userEntity = userService.getByCredentials(userDTO.getEmail(), userDTO.getPassword());
+
+        if(userEntity != null){
+            final String token =  tokenProvider.create(userEntity);
             final UserDTO responseUserDTO = UserDTO.builder()
-                    .id(user.getId())
-                    .email(user.getEmail())
+                    .id(userEntity.getId())
+                    .email(userEntity.getEmail())
                     .token(token)
                     .build();
             return ResponseEntity.ok().body(responseUserDTO);

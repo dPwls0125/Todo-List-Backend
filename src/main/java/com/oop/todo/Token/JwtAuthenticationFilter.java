@@ -35,10 +35,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 String userId = tokenProvider.validateAndGetUserId(token);
                 log.info("Authenticated user ID:" +userId);
+
                 AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId, null, AuthorityUtils.NO_AUTHORITIES);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
                 SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
                 securityContext.setAuthentication(authentication);
+
                 SecurityContextHolder.setContext(securityContext);
 
             }
