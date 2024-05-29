@@ -1,10 +1,10 @@
-package com.oop.todo.controller;
+package com.oop.todo.Domain.Todo.controller;
 
 
-import com.oop.todo.dto.ResponseDTO;
-import com.oop.todo.dto.TodoDTO;
-import com.oop.todo.model.TodoEntity;
-import com.oop.todo.service.TodoService;
+import com.oop.todo.Domain.Todo.dto.ResponseDTO;
+import com.oop.todo.Domain.Todo.dto.TodoDTO;
+import com.oop.todo.Domain.Todo.Entity.TodoEntity;
+import com.oop.todo.Domain.Todo.service.TodoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
