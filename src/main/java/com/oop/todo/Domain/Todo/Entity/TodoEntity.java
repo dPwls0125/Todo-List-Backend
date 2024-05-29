@@ -1,4 +1,4 @@
-package com.oop.todo.model;
+package com.oop.todo.Domain.Todo.Entity;
 
 
 import jakarta.persistence.Entity;

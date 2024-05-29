@@ -7,14 +7,20 @@ import io.swagger.v3.oas.models.info.Info;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+//http://localhost:8080/swagger-ui/index.html
 @Configuration
 public class SwaggerConfig {
     @Bean
-    public OpenAPI WhatssueOpenAPI() {
+    public OpenAPI TodoOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("TodoList OpenApi")
-                        .description("객체지향 프로그래밍 프로젝트를 위한 TodoList API 문서입니다.")
-                        .version("V1"));
+                        .title("Whatssue OpenApi")
+                        .description("소모임 출석 관리 application_ Whatssue?의 Open API입니다.")
+                        .version("V2")
+                        .contact(new Contact()
+                                .name("whatssue")
+                                .email("kimphoby0125@gmail.com")));
+
     }
+
 }

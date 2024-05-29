@@ -1,4 +1,4 @@
-package com.oop.todo.dto;
+package com.oop.todo.Domain.Todo.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

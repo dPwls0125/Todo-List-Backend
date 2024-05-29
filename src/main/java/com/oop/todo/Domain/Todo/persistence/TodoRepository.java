@@ -1,6 +1,6 @@
-package com.oop.todo.persistence;
+package com.oop.todo.Domain.Todo.persistence;
 
-import com.oop.todo.model.TodoEntity;
+import com.oop.todo.Domain.Todo.Entity.TodoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
