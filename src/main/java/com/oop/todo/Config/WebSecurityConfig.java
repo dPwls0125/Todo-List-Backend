@@ -49,6 +49,7 @@ public class WebSecurityConfig  {
             "/signUp",
             "/h2-console/**",
             "/auth/**",
+            "/login",
             "/"
     };
 
@@ -78,14 +79,10 @@ public class WebSecurityConfig  {
                 .httpBasic(basic -> basic.disable())
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorizeRequests -> {
-                        try {
-                            authorizeRequests
-                                    .requestMatchers(AUTH_WHITELIST).permitAll();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    });
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(AUTH_WHITELIST).permitAll()
+                        .anyRequest().permitAll());
+
 
 
         http.exceptionHandling(except -> {
@@ -98,12 +95,12 @@ public class WebSecurityConfig  {
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
                 objectMapper.writeValue(response.getOutputStream(), data);
+                // response.getOutputStream()을 사용하면 파일의 데이터를 Http 바디에 쓸 수 있다.
             });
         });
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterAfter(jwtAuthenticationFilter, CorsFilter.class);
-        http.authorizeHttpRequests(request -> request.anyRequest().authenticated());
 
         return http.build();
     }
