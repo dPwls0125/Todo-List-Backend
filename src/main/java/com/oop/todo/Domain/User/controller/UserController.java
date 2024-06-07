@@ -1,7 +1,10 @@
-package com.oop.todo.Domain.User;
+package com.oop.todo.Domain.User.controller;
 
+import com.oop.todo.Domain.User.service.UserService;
+import com.oop.todo.Domain.User.entity.UserDTO;
+import com.oop.todo.Domain.User.entity.UserEntity;
 import com.oop.todo.ResponseDTO;
-import com.oop.todo.Token.TokenProvider;
+import com.oop.todo.global.jwt.TokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -63,4 +66,6 @@ public class UserController {
             return ResponseEntity.badRequest().body(responseDTO);
         }
     }
+
+
 }

@@ -1,4 +1,4 @@
-package com.oop.todo.Domain.User;
+package com.oop.todo.Domain.User.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,10 +20,14 @@ import jakarta.persistence.UniqueConstraint;
 @AllArgsConstructor
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = "email")}) // 제약 조건 추가
 public class UserEntity {
+
     @Id
     @GeneratedValue(generator="system-uuid")
     @GenericGenerator(name="system-uuid",strategy="uuid")
     private String id;
+
+    @Column(unique = true)
+    private String oauthId;
 
     @Column(nullable=false)
     private String username;
@@ -31,7 +35,7 @@ public class UserEntity {
     @Column(nullable=false, unique=true)
     private String email;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String password;
 
 }
