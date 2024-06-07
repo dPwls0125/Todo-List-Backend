@@ -1,4 +1,4 @@
-package com.oop.todo.Domain.User;
+package com.oop.todo.Domain.User.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

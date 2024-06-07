@@ -1,5 +1,7 @@
-package com.oop.todo.Domain.User;
+package com.oop.todo.Domain.User.service;
 
+import com.oop.todo.Domain.User.repository.UserRepository;
+import com.oop.todo.Domain.User.entity.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

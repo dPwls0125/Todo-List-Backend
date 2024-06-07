@@ -1,12 +1,12 @@
-package com.oop.todo.Token;
+package com.oop.todo.global.jwt;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -32,28 +32,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             String token = parseBearerToken(request);
             log.info("Filter is running");
-
-            if(token != null && token.equalsIgnoreCase("null")){
-
+            if (token != null && !token.equalsIgnoreCase("null")) {
                 String userId = tokenProvider.validateAndGetUserId(token);
-                log.info("Authenticated user ID:" +userId);
+                log.info("Authenticated user ID:" + userId);
 
                 AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId, null, AuthorityUtils.NO_AUTHORITIES);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
                 SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
                 securityContext.setAuthentication(authentication);
-
                 SecurityContextHolder.setContext(securityContext);
 
             }
+
         }catch(Exception ex){
             logger.error("Could not set user authentication in security context", ex);
         }
         filterChain.doFilter(request, response);
     }
 
-    private String parseBearerToken(HttpServletRequest request) {
+    private String parseBearerToken(HttpServletRequest request) throws JwtException{
 
         String bearerToken = request.getHeader("Authorization"); // token is in the header
 

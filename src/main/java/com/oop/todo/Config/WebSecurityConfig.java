@@ -1,29 +1,30 @@
 package com.oop.todo.Config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.oop.todo.Token.JwtAuthenticationFilter;
+import com.oop.todo.global.oauth2.LoginFailureHandler;
+import com.oop.todo.global.oauth2.LoginSuccessHandler;
+import com.oop.todo.global.oauth2.OauthService;
+import com.oop.todo.global.jwt.JwtAuthenticationFilter;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -37,6 +38,7 @@ import java.util.Map;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class WebSecurityConfig  {
     private static final String[] AUTH_WHITELIST = {
             // swagger
@@ -46,34 +48,29 @@ public class WebSecurityConfig  {
             "/swagger-ui.html",
             "/v2/api-docs",
             "/webjars/**",
-            "/signUp",
             "/h2-console/**",
             "/auth/**",
-            "/login",
-            "/"
+            "/oauth/**",
+            "/oauth2/**",
+            "/",
     };
 
     private final ObjectMapper objectMapper;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
-    @Autowired
-    public WebSecurityConfig(ObjectMapper objectMapper, JwtAuthenticationFilter jwtAuthenticationFilter) {
-        this.objectMapper = objectMapper;
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-    }
-
-
-//
-//    @Bean
-//    @ConditionalOnProperty(name = "spring.h2.console.enabled", havingValue = "true")
-//    public WebSecurityCustomizer configureH2ConsoleEnable() {
-//        return web -> web.ignoring()
-//                .requestMatchers(PathRequest.toH2Console());
-//    }
+    private final OauthService OAuth2Service;
+    private final LoginSuccessHandler loginSuccessHandler;
+    private final LoginFailureHandler loginFailureHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+
         http
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(OAuth2Service)) // 유저 정보 가져오기
+                        .successHandler(loginSuccessHandler) // 로그인 성공
+                        .failureHandler(loginFailureHandler) // 로그인 실패
+                        .permitAll())
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .httpBasic(basic -> basic.disable())
@@ -81,9 +78,7 @@ public class WebSecurityConfig  {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(AUTH_WHITELIST).permitAll()
-                        .anyRequest().permitAll());
-
-
+                        .anyRequest().authenticated());
 
         http.exceptionHandling(except -> {
             except.authenticationEntryPoint((request, response, e) -> {
@@ -132,5 +127,11 @@ public class WebSecurityConfig  {
         source.registerCorsConfiguration("/**", config);
         return source;
 
+    }
+    @Bean
+    public OAuth2AuthorizationRequestResolver authorizationRequestResolver(
+            ClientRegistrationRepository clientRegistrationRepository) {
+        return new DefaultOAuth2AuthorizationRequestResolver(
+                clientRegistrationRepository, OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI);
     }
 }

@@ -1,18 +1,16 @@
 spring:
-
+  profiles:
+    include: oauth2
   application:
     name: todo
 
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:todo
+    url: jdbc:h2:~/DB # 파일기반 H2 데이터베이스
     username: todo
     password :
-# h2-console
-#  security:
-#    user:
+
 #      name: user
-#      password: 1234
   # 개발시에만 H2 Console 설정
   h2:
     console:
@@ -24,12 +22,18 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: false
     properties:
       hibernate:
         format_sql: true
     defer-datasource-initialization: true
+
+server:
+  url: ${SERVER_URL}
+
+front:
+  url: ${FRONT_URL}
 
 
 

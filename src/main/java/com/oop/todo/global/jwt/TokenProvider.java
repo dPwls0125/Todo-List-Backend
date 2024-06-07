@@ -1,11 +1,12 @@
-package com.oop.todo.Token;
+package com.oop.todo.global.jwt;
 
-import com.oop.todo.Domain.User.UserEntity;
+import com.oop.todo.Domain.User.entity.UserEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -29,7 +30,6 @@ public class TokenProvider {
                 .setExpiration(expireDate)
                 .signWith(SECRET_KEY)
                 .compact();
-
     }
 
     public String validateAndGetUserId(String token) {

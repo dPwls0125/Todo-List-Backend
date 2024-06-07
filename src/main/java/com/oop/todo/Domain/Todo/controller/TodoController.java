@@ -5,7 +5,9 @@ import com.oop.todo.Domain.Todo.dto.ResponseDTO;
 import com.oop.todo.Domain.Todo.dto.TodoDTO;
 import com.oop.todo.Domain.Todo.Entity.TodoEntity;
 import com.oop.todo.Domain.Todo.service.TodoService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -65,7 +67,9 @@ public class TodoController {
     }
 
     @GetMapping
-    public ResponseEntity<?>retrieveTodoList() {
+    public ResponseEntity<?>retrieveTodoList(HttpServletRequest request) {
+        log.info(request.getHeader("Authorization"));
+
         String temporaryUserId = "temporary-userid";
         List<TodoEntity> entities = service.retrieve(temporaryUserId);
         List<TodoDTO> dtos = entities.stream().map(TodoDTO::new).collect(Collectors.toList());
