@@ -1,16 +1,14 @@
 package com.oop.todo.Domain.User.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.oop.todo.Domain.Todo.Entity.TodoEntity;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+
+import java.util.List;
 
 
 @Data
@@ -32,10 +30,13 @@ public class UserEntity {
     @Column(nullable=false)
     private String username;
 
-    @Column(nullable=false, unique=true)
+//    @OneToMany(mappedBy = "userEntity")
+//    private List<TodoEntity> todos;
+
+    @Column(nullable=true, unique=true)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
 
 }

@@ -1,6 +1,7 @@
 package com.oop.todo.Domain.Todo.Entity;
 
 
+import com.oop.todo.Domain.User.entity.UserEntity;
 import jakarta.persistence.*;
 
 
@@ -23,8 +24,9 @@ public class TodoEntity {
     @GenericGenerator(name="system-uuid",strategy="uuid")
     private String id;
 
-    @Column(name = "user_id")
-    private String userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private UserEntity userEntity;
 
     @Column(name = "title")
     private String title;

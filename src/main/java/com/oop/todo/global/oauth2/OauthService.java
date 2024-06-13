@@ -29,28 +29,37 @@ public class OauthService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         // accessToken을 이용해서 유저의 정보를 받아온다.
-        String registerId = userRequest.getClientRegistration().getClientId();
+        String registerId = userRequest.getClientRegistration().getRegistrationId();
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        saveOrFindUser(oAuth2User,registerId);
-        return super.loadUser(userRequest);  // 세션로그인에서는 userdetail을반환하여 로그인 객체로 만들지만 jwt에서는 null로만 안두면 됨.
+        return saveOrFindUser(oAuth2User,registerId);  // Authentication 객체에 저장
     }
 
-    private void saveOrFindUser(OAuth2User oAuth2User, String registerId ){
-
-        switch (registerId){
+    private OAuth2User saveOrFindUser(OAuth2User oAuth2User, String registerId ){
+        System.out.println(registerId);
+        return switch(registerId){
             case "kakao"  -> kakaoRegisterOrFindUser(oAuth2User,registerId);
 //            case "google" => googleSaveOrFindUser(oAuth2User);
-        }
+            default -> throw new IllegalStateException("Unexpected value: " + registerId);
+        };
     }
 
-    private void kakaoRegisterOrFindUser(OAuth2User oAuth2User,String registerId){
-            userRepository.findByOauthId(registerId+oAuth2User.getName())
+    private KakaoUser kakaoRegisterOrFindUser(OAuth2User oAuth2User,String registerId){
+            String oauthId = registerId + oAuth2User.getName();
+        System.out.println(oAuth2User.getAttributes());
+            UserEntity user = userRepository.findByOauthId(oauthId)
                     .orElseGet(
                             ()-> userRepository.save(UserEntity.builder()
+                                    .oauthId(oauthId)
                                     .username(oAuth2User.getName())
-                                    .email(oAuth2User.getAttribute("email"))
                                     .build()
                             ));
+        return KakaoUser.builder()
+                .registrationId("kakao")
+                .userId(String.valueOf(user.getId()))
+                .oauth2Id(user.getOauthId())
+                .attributes(oAuth2User.getAttributes())
+                .authorities(oAuth2User.getAuthorities())
+                .build();
     }
 
 }

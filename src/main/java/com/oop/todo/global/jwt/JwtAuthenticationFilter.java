@@ -38,14 +38,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId, null, AuthorityUtils.NO_AUTHORITIES);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+                SecurityContext securityContext = SecurityContextHolder.getContext();
                 securityContext.setAuthentication(authentication);
-                SecurityContextHolder.setContext(securityContext);
-
             }
 
-        }catch(Exception ex){
+        } catch(Exception ex){
             logger.error("Could not set user authentication in security context", ex);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return;
         }
         filterChain.doFilter(request, response);
     }

@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -23,41 +25,26 @@ import java.util.stream.Collectors;
 public class TodoController {
 
     @Autowired
-    private TodoService service;
+    private TodoService todoService;
 
     @PostMapping
-    public ResponseEntity<?>createTodo(@RequestBody TodoDTO dto) {
+    public ResponseEntity<?>createTodo(@RequestBody TodoDTO dto, @AuthenticationPrincipal String userId) {
         try {
-//            /* POST localhost:8080/todo
-//             * {
-//             * "title" : "My first todo",
-//             * "done" : false
-//             * }
-//             */
-            log.info("Log:createTodo entrance");
 
-            // dto 를 이용해 테이블에 저장하기 위한 entity를 생성한다.
-            TodoEntity entity = TodoDTO.toEntity(dto);
-            log.info("Log:dto => entity ok!");
 
-            // entity userId를 임시로 지정한다.
-            entity.setUserId("temporary-userid");
-
-            Optional<TodoEntity> entities = service.create(entity);
+            TodoEntity entity = todoService.create(userId,dto);
             log.info("Log:servce.create ok!");
 
+            TodoDTO dtos = TodoDTO.builder()
+                    .id(entity.getId())
+                    .title(entity.getTitle())
+                    .done(entity.isDone())
+                    .build();
+
             // entities를 dtos로 스트림 변환한다.
-            List<TodoDTO> dtos = entities.stream().map(TodoDTO::new).collect(Collectors.toList());
             log.info("Log:entities => dtos ok!");
+            ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().data(List.of(dtos)).build();
 
-            // Response DTO를 생성한다.
-            /* {
-             *
-             */
-            ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().data(dtos).build();
-            log.info("Log:responsedto ok!");
-
-            // HTTP Status 200 상태로 response를 전송한다.
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
             String error = e.getMessage();
@@ -67,11 +54,9 @@ public class TodoController {
     }
 
     @GetMapping
-    public ResponseEntity<?>retrieveTodoList(HttpServletRequest request) {
-        log.info(request.getHeader("Authorization"));
+    public ResponseEntity<?>retrieveTodoList(HttpServletRequest request,@AuthenticationPrincipal String userId) {
 
-        String temporaryUserId = "temporary-userid";
-        List<TodoEntity> entities = service.retrieve(temporaryUserId);
+        List<TodoEntity> entities = todoService.retrieve(userId);
         List<TodoDTO> dtos = entities.stream().map(TodoDTO::new).collect(Collectors.toList());
 
         ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().data(dtos).build();
@@ -86,12 +71,9 @@ public class TodoController {
             //dto를 이용해 테이블에 저장하기 위한 entity를 생성한다.
             TodoEntity entity = TodoDTO.toEntity(dto);
 
-            //entity userId를 임시로 지정한다.
-            entity.setUserId("Temporary-user");
-
             //service.create를 통해 repository에 entity를 저장한다.
             //이 때 넘어오는 값이 없을 수도 있으므로 List가 아닌 Optional로 한다.
-            Optional<TodoEntity> entities = service.update(entity);
+            Optional<TodoEntity> entities = todoService.update(entity);
 
             //entities를 dtos로 스트림 변환한다.
             List<TodoDTO> dtos = entities.stream().map(TodoDTO::new).collect(Collectors.toList());
@@ -114,12 +96,10 @@ public class TodoController {
             //dto를 이용해 테이블에 저장하기 위한 entity를 생성한다.
             TodoEntity entity = TodoDTO.toEntity(dto);
 
-            //entity userId를 임시로 지정한다.
-            entity.setUserId("Temporary-user");
 
             //service.create를 통해 repository에 entity를 저장한다.
             //이 때 넘어오는 값이 없을 수도 있으므로 List가 아닌 Optional로 한다.
-            Optional<TodoEntity> entities = service.updateTodo(entity);
+            Optional<TodoEntity> entities = todoService.updateTodo(entity);
 
             //entities를 dtos로 스트림 변환한다.
             List<TodoDTO> dtos = entities.stream().map(TodoDTO::new).collect(Collectors.toList());
@@ -140,7 +120,7 @@ public class TodoController {
     public ResponseEntity<?> delete(@RequestBody TodoDTO dto){
         try {
             List<String> message = new ArrayList<>(); //import java.util.ArrayList 추가
-            String msg = service.delete(dto.getId());
+            String msg = todoService.delete(dto.getId());
             message.add(msg);
             //Response DTO를 생성한다.
             ResponseDTO<String> response = ResponseDTO.<String>builder().data(message).build();

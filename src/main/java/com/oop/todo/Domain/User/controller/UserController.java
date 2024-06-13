@@ -1,7 +1,7 @@
 package com.oop.todo.Domain.User.controller;
 
 import com.oop.todo.Domain.User.service.UserService;
-import com.oop.todo.Domain.User.entity.UserDTO;
+import com.oop.todo.Domain.User.entity.dto.UserDTO;
 import com.oop.todo.Domain.User.entity.UserEntity;
 import com.oop.todo.ResponseDTO;
 import com.oop.todo.global.jwt.TokenProvider;
@@ -59,11 +59,11 @@ public class UserController {
                     .token(token)
                     .build();
             return ResponseEntity.ok().body(responseUserDTO);
-        }else{
+        } else {
             ResponseDTO responseDTO = ResponseDTO.builder()
                     .error("Login failed")
                     .build();
-            return ResponseEntity.badRequest().body(responseDTO);
+            return ResponseEntity.status(401).body(responseDTO);
         }
     }
 

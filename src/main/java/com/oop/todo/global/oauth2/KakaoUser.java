@@ -15,7 +15,6 @@ import java.util.Map;
 @Builder
 @AllArgsConstructor
 public class KakaoUser implements OAuth2User {
-
     private String  registrationId;  // kakao
     private String userId;  // DB에 저장된 id
     private String oauth2Id;  // kakaoId

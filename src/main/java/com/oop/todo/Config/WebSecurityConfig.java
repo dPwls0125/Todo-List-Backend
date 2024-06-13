@@ -52,6 +52,7 @@ public class WebSecurityConfig  {
             "/auth/**",
             "/oauth/**",
             "/oauth2/**",
+            "/certification/mail/**",
             "/",
     };
 
