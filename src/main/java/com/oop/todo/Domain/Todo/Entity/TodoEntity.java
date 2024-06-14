@@ -10,7 +10,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+
+import java.time.LocalDateTime;
 
 @Builder
 @NoArgsConstructor
@@ -33,4 +36,13 @@ public class TodoEntity {
 
     @Column(name = "done")
     private boolean done;
+
+    @CreationTimestamp
+    @Column(name = "created_date", updatable = false)
+    private LocalDateTime createdDate;
+
+    @Column(name = "priority")
+    private Priority priority;
+
+
 }

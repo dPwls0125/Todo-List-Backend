@@ -13,5 +13,7 @@ import java.util.List;
 @Repository
 public interface TodoRepository extends JpaRepository<TodoEntity, String> {
     List<TodoEntity> findByUserEntity(UserEntity userEntity);
-    Page<TodoEntity> findByUserEntity(UserEntity userEntity, Pageable pageable);
+      Page<TodoEntity> findByUserEntityOrderByPriorityAscCreatedDateDesc(UserEntity userEntity, Pageable pageable);
+
+    
 }

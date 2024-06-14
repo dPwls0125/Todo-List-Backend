@@ -1,6 +1,7 @@
 package com.oop.todo.Domain.Todo.service;
 
 
+import com.oop.todo.Domain.Todo.Entity.Priority;
 import com.oop.todo.Domain.Todo.Entity.TodoEntity;
 import com.oop.todo.Domain.Todo.Repository.TodoRepository;
 import com.oop.todo.Domain.Todo.dto.TodoDTO;
@@ -40,6 +41,7 @@ public class TodoService {
                 .userEntity(user)
                 .title(todoDTO.getTitle())
                 .done(todoDTO.isDone())
+                .priority(todoDTO.getPriority() != null ? todoDTO.getPriority() : Priority.LOW) // 기본값 설정
                 .build();
         todoRepository.save(todo);
         return todo;
@@ -57,7 +59,7 @@ public class TodoService {
         UserEntity user = userRepository.findById(userId).orElseThrow(
                     ()-> new RuntimeException("User not found"));
         Pageable pageable = PageRequest.of(page,size);
-        Page<TodoEntity> pages =  todoRepository.findByUserEntity(user, pageable);
+        Page<TodoEntity> pages =  todoRepository.findByUserEntityOrderByPriorityAscCreatedDateDesc(user, pageable);
         return pages.map(TodoDTO::toDTO);
     }
     public Optional<TodoEntity>update(final TodoEntity entity) {
