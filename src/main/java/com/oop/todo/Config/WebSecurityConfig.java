@@ -53,6 +53,7 @@ public class WebSecurityConfig  {
             "/oauth/**",
             "/oauth2/**",
             "/certification/mail/**",
+            "/certification/**",
             "/",
     };
 
@@ -82,9 +83,10 @@ public class WebSecurityConfig  {
                         .anyRequest().authenticated());
 
         http.exceptionHandling(except -> {
-            except.authenticationEntryPoint((request, response, e) -> {
+            except
+                    .authenticationEntryPoint((request, response, e) -> {
                 Map<String, Object> data = new HashMap<String, Object>();
-                data.put("status", HttpServletResponse.SC_FORBIDDEN);
+                data.put("status", HttpServletResponse.SC_FORBIDDEN); // 403
                 data.put("message", e.getMessage());
 
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -92,7 +94,17 @@ public class WebSecurityConfig  {
 
                 objectMapper.writeValue(response.getOutputStream(), data);
                 // response.getOutputStream()을 사용하면 파일의 데이터를 Http 바디에 쓸 수 있다.
-            });
+            })
+                .accessDeniedHandler((request, response, e) -> {
+                    Map<String, Object> data = new HashMap<String, Object>();
+                    data.put("status", HttpServletResponse.SC_FORBIDDEN); // 403
+                    data.put("message", e.getMessage());
+
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+                    objectMapper.writeValue(response.getOutputStream(), data);
+                });
         });
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

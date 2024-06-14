@@ -17,7 +17,9 @@ public class SpringdocConfig {
     public OpenAPI WhatssueOpenAPI() {
 
         SecurityScheme apiKey = new SecurityScheme()
-                .type(SecurityScheme.Type.APIKEY)
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .bearerFormat("JWT")
                 .in(SecurityScheme.In.HEADER)
                 .name("Authorization");
 

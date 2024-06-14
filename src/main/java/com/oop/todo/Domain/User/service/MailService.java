@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -21,6 +23,7 @@ public class MailService {
     private final JavaMailSender emailSender;
     public static Random random = new Random();
     private HashMap<String, Integer> certificationMap = new HashMap<>();
+    private Set<String> emailIsChecked  = new HashSet<>();
     public void sendEmail( String toEmail){
 
         int certNum = random.nextInt(101,999);
@@ -57,21 +60,23 @@ public class MailService {
         return message;
     }
 
-    public void validateEmail(EmailDto dto)  {
-        try{
+    public void validateEmail(EmailDto dto) throws Exception  {
             String email = dto.getEmail();
             int num = dto.getNum();
 
             if(certificationMap.get(email) == num){
                 System.out.println(certificationMap.get(email));
+                emailIsChecked.add(email);
                 certificationMap.remove(email);
             }
             else{
                 throw new Exception("Invalid certification number");
             }
-        }catch(Exception e){
-            System.out.println(e.getMessage());
-        }
+
+    }
+
+    public boolean isEmailChecked(String email){
+        return emailIsChecked.contains(email);
     }
 
 }

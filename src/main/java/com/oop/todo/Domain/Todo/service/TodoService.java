@@ -8,7 +8,11 @@ import com.oop.todo.Domain.User.entity.UserEntity;
 import com.oop.todo.Domain.User.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +20,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class TodoService {
     private final TodoRepository todoRepository;
     private final UserRepository userRepository;
@@ -48,6 +53,13 @@ public class TodoService {
         return todoRepository.findByUserEntity(user);
     }
 
+    public Page<TodoDTO> retrieve(final String userId, final int page, final int size) {
+        UserEntity user = userRepository.findById(userId).orElseThrow(
+                    ()-> new RuntimeException("User not found"));
+        Pageable pageable = PageRequest.of(page,size);
+        Page<TodoEntity> pages =  todoRepository.findByUserEntity(user, pageable);
+        return pages.map(TodoDTO::toDTO);
+    }
     public Optional<TodoEntity>update(final TodoEntity entity) {
         //Validations
         validate(entity);
@@ -61,14 +73,14 @@ public class TodoService {
     }
 
     public Optional<TodoEntity>updateTodo(final TodoEntity entity) {
-        //validations
-        validate(entity);
+
         System.out.println(entity.toString());
         //테이블에서 id에 해당하는 데이터셋을 가져온다.
         final Optional<TodoEntity> original = todoRepository.findById(entity.getId());
 
         //original에 담겨진 내용을 todo에 할당하고 title, done 값을 변경한다.
         original.ifPresent(todo -> {
+            validate(todo);
             todo.setTitle(entity.getTitle());
             todo.setDone(entity.isDone());
             todoRepository.save(todo);
@@ -86,11 +98,13 @@ public class TodoService {
         return "Deleted:";
     }
 
+
     public void validate(final TodoEntity entity){
         if(entity == null) {
             log.warn("Entity cannot be null.");
             throw new RuntimeException("Entity cannot be null.");
         }
+        System.out.println(entity.toString());
         if(entity.getUserEntity() == null) {
             log.warn("Unknown user.");
             throw new RuntimeException("Unknown user.");

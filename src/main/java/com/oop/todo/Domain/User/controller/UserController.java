@@ -1,10 +1,12 @@
 package com.oop.todo.Domain.User.controller;
 
+import com.oop.todo.Domain.User.service.MailService;
 import com.oop.todo.Domain.User.service.UserService;
 import com.oop.todo.Domain.User.entity.dto.UserDTO;
 import com.oop.todo.Domain.User.entity.UserEntity;
 import com.oop.todo.ResponseDTO;
 import com.oop.todo.global.jwt.TokenProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,15 +16,22 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class UserController {
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private TokenProvider tokenProvider;
+    private final UserService userService;
+    private final MailService mailService;
+    private final TokenProvider tokenProvider;
     @PostMapping("/signUp")
     public ResponseEntity<?>registerUser(@RequestBody UserDTO userDTO){
         try{
+
+            if(!mailService.isEmailChecked(userDTO.getEmail())){
+                ResponseDTO responseDTO = ResponseDTO.builder()
+                        .error("Email is not checked")
+                        .build();
+                return ResponseEntity.badRequest().body(responseDTO);
+            }
+
             UserEntity userEntity = UserEntity.builder()
                     .username(userDTO.getUsername())
                     .password(userDTO.getPassword())

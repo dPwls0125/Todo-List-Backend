@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Request;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,8 +31,6 @@ public class TodoController {
     @PostMapping
     public ResponseEntity<?>createTodo(@RequestBody TodoDTO dto, @AuthenticationPrincipal String userId) {
         try {
-
-
             TodoEntity entity = todoService.create(userId,dto);
             log.info("Log:servce.create ok!");
 
@@ -64,6 +63,18 @@ public class TodoController {
         // HTTP Status 200 상태로 response를 전송한다.
         return ResponseEntity.ok().body(response);
     }
+
+    @GetMapping("/page")
+    public ResponseEntity<Page<TodoDTO>> retriveTodoList(
+            @AuthenticationPrincipal String userId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "5") int size
+            ){
+        Page<TodoDTO> todoPages = todoService.retrieve(userId, page, size);
+        return ResponseEntity.ok().body(todoPages);
+
+    }
+
 
     @GetMapping("/update")
     public ResponseEntity<?>update(@RequestBody TodoDTO dto){

@@ -28,7 +28,11 @@ public class MailController {
     @PostMapping("/validate")
     public ResponseEntity validateEmail(@RequestBody EmailDto dto ){
         log.debug("MailController.validationEmail is running");
-        mailService.validateEmail(dto);
+        try{
+            mailService.validateEmail(dto);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.ok().build();
     }
 }
