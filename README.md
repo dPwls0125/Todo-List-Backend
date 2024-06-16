@@ -1,6 +1,6 @@
 # Todo List Application
 
-![Todo List Application ](/Users/kim-yejin/myProject/todo/src/main/java/com/oop/todo/todolist.png)
+![Todo List Application ](./Image/todolist.png)
 
 ## 기본 기능
 
